@@ -1,19 +1,22 @@
-# Building a CRUD Web Application with React and SQLite
+# Building a Simple CRUD Web Application with React
 
 Here's a step-by-step guide to creating a full-stack CRUD (Create, Read, Update, Delete) application using React for the frontend and SQLite for the database.
 
+---
+
 ## Step 1: Set Up the Project Structure
 
-First, let's create the basic project structure:
-
-1. Create a new project folder
-2. Initialize both frontend (React) and backend (Node.js with SQLite) parts
+### 1. Create a new project folder
 
 ```bash
 # Create project directory
 mkdir react-sqlite-crud
 cd react-sqlite-crud
+```
 
+### 2. Initialize both frontend (React) and backend (Node.js with SQLite) parts
+
+```bash
 # Create React frontend
 npx create-react-app frontend
 
@@ -23,22 +26,24 @@ cd backend
 npm init -y
 ```
 
+---
+
 ## Step 2: Set Up the Backend (Node.js with SQLite)
 
-Install necessary backend dependencies:
+### 1. Install backend dependencies:
 
 ```bash
 cd backend
 npm install express sqlite3 cors body-parser
 ```
 
-Create `backend/server.js`:
+### 2. Create `backend/server.js`:
 
 ```javascript
-const express = require('express');
-const sqlite3 = require('sqlite3').verbose();
-const bodyParser = require('body-parser');
-const cors = require('cors');
+const express = require("express");
+const sqlite3 = require("sqlite3").verbose();
+const bodyParser = require("body-parser");
+const cors = require("cors");
 
 const app = express();
 const port = 5000;
@@ -48,11 +53,11 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Database setup
-const db = new sqlite3.Database('./database.db', (err) => {
+const db = new sqlite3.Database("./database.db", (err) => {
   if (err) {
     console.error(err.message);
   }
-  console.log('Connected to the SQLite database.');
+  console.log("Connected to the SQLite database.");
 });
 
 // Create items table if it doesn't exist
@@ -66,10 +71,10 @@ db.run(`CREATE TABLE IF NOT EXISTS items (
 // CRUD Routes
 
 // Create
-app.post('/api/items', (req, res) => {
+app.post("/api/items", (req, res) => {
   const { name, description } = req.body;
   db.run(
-    'INSERT INTO items (name, description) VALUES (?, ?)',
+    "INSERT INTO items (name, description) VALUES (?, ?)",
     [name, description],
     function (err) {
       if (err) {
@@ -81,8 +86,8 @@ app.post('/api/items', (req, res) => {
 });
 
 // Read all
-app.get('/api/items', (req, res) => {
-  db.all('SELECT * FROM items', [], (err, rows) => {
+app.get("/api/items", (req, res) => {
+  db.all("SELECT * FROM items", [], (err, rows) => {
     if (err) {
       return res.status(400).json({ error: err.message });
     }
@@ -91,9 +96,9 @@ app.get('/api/items', (req, res) => {
 });
 
 // Read one
-app.get('/api/items/:id', (req, res) => {
+app.get("/api/items/:id", (req, res) => {
   const { id } = req.params;
-  db.get('SELECT * FROM items WHERE id = ?', [id], (err, row) => {
+  db.get("SELECT * FROM items WHERE id = ?", [id], (err, row) => {
     if (err) {
       return res.status(400).json({ error: err.message });
     }
@@ -102,11 +107,11 @@ app.get('/api/items/:id', (req, res) => {
 });
 
 // Update
-app.put('/api/items/:id', (req, res) => {
+app.put("/api/items/:id", (req, res) => {
   const { id } = req.params;
   const { name, description } = req.body;
   db.run(
-    'UPDATE items SET name = ?, description = ? WHERE id = ?',
+    "UPDATE items SET name = ?, description = ? WHERE id = ?",
     [name, description, id],
     function (err) {
       if (err) {
@@ -118,13 +123,13 @@ app.put('/api/items/:id', (req, res) => {
 });
 
 // Delete
-app.delete('/api/items/:id', (req, res) => {
+app.delete("/api/items/:id", (req, res) => {
   const { id } = req.params;
-  db.run('DELETE FROM items WHERE id = ?', [id], function (err) {
+  db.run("DELETE FROM items WHERE id = ?", [id], function (err) {
     if (err) {
       return res.status(400).json({ error: err.message });
     }
-    res.json({ message: 'Item deleted successfully' });
+    res.json({ message: "Item deleted successfully" });
   });
 });
 
@@ -133,6 +138,8 @@ app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });
 ```
+
+---
 
 ## Step 3: Set Up the React Frontend
 
@@ -145,12 +152,12 @@ npm install axios react-router-dom
 
 ### Create React Components
 
-1. Create `frontend/src/components/ItemList.js`:
+#### 1. Create `frontend/src/components/ItemList.js`:
 
 ```javascript
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { Link } from "react-router-dom";
 
 const ItemList = () => {
   const [items, setItems] = useState([]);
@@ -161,10 +168,10 @@ const ItemList = () => {
 
   const fetchItems = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/items');
+      const response = await axios.get("http://localhost:5000/api/items");
       setItems(response.data);
     } catch (error) {
-      console.error('Error fetching items:', error);
+      console.error("Error fetching items:", error);
     }
   };
 
@@ -173,7 +180,7 @@ const ItemList = () => {
       await axios.delete(`http://localhost:5000/api/items/${id}`);
       fetchItems();
     } catch (error) {
-      console.error('Error deleting item:', error);
+      console.error("Error deleting item:", error);
     }
   };
 
@@ -199,14 +206,12 @@ const ItemList = () => {
               <td>
                 <Link
                   to={`/edit/${item.id}`}
-                  className="btn btn-sm btn-warning mr-2"
-                >
+                  className="btn btn-sm btn-warning mr-2">
                   Edit
                 </Link>
                 <button
                   onClick={() => handleDelete(item.id)}
-                  className="btn btn-sm btn-danger"
-                >
+                  className="btn btn-sm btn-danger">
                   Delete
                 </button>
               </td>
@@ -221,15 +226,15 @@ const ItemList = () => {
 export default ItemList;
 ```
 
-2. Create `frontend/src/components/ItemForm.js`:
+#### 2. Create `frontend/src/components/ItemForm.js`:
 
 ```javascript
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { useParams, useNavigate } from "react-router-dom";
 
 const ItemForm = () => {
-  const [item, setItem] = useState({ name: '', description: '' });
+  const [item, setItem] = useState({ name: "", description: "" });
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -244,7 +249,7 @@ const ItemForm = () => {
       const response = await axios.get(`http://localhost:5000/api/items/${id}`);
       setItem(response.data);
     } catch (error) {
-      console.error('Error fetching item:', error);
+      console.error("Error fetching item:", error);
     }
   };
 
@@ -258,17 +263,17 @@ const ItemForm = () => {
       if (id) {
         await axios.put(`http://localhost:5000/api/items/${id}`, item);
       } else {
-        await axios.post('http://localhost:5000/api/items', item);
+        await axios.post("http://localhost:5000/api/items", item);
       }
-      navigate('/');
+      navigate("/");
     } catch (error) {
-      console.error('Error saving item:', error);
+      console.error("Error saving item:", error);
     }
   };
 
   return (
     <div>
-      <h2>{id ? 'Edit Item' : 'Add Item'}</h2>
+      <h2>{id ? "Edit Item" : "Add Item"}</h2>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label>Name</label>
@@ -301,14 +306,14 @@ const ItemForm = () => {
 export default ItemForm;
 ```
 
-3. Update `frontend/src/App.js`:
+### 3. Update `frontend/src/App.js`:
 
 ```javascript
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import ItemList from './components/ItemList';
-import ItemForm from './components/ItemForm';
-import './App.css';
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import ItemList from "./components/ItemList";
+import ItemForm from "./components/ItemForm";
+import "./App.css";
 
 function App() {
   return (
@@ -327,14 +332,14 @@ function App() {
 export default App;
 ```
 
-4. Update `frontend/src/index.css` to add some basic styling:
+#### 4. Update `frontend/src/index.css` to add some basic styling:
 
 ```css
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+    "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+    "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -386,21 +391,25 @@ body {
 }
 ```
 
+---
+
 ## Step 4: Run the Application
 
-1. Start the backend server:
+### 1. Start the backend server:
 
 ```bash
 cd backend
 node server.js
 ```
 
-2. In another terminal, start the React frontend:
+### 2. In another terminal, start the React frontend:
 
 ```bash
 cd frontend
 npm start
 ```
+
+---
 
 ## Step 5: Test the Application
 
@@ -411,6 +420,8 @@ npm start
    - Read: View the list of items
    - Update: Edit existing items
    - Delete: Remove items
+
+---
 
 ## Additional Improvements
 
@@ -424,4 +435,3 @@ For a production-ready application, consider:
 6. Implementing pagination for large datasets
 7. Using a more sophisticated state management solution (like Redux or Context API) for complex applications
 
-This completes your basic CRUD application with React and SQLite!
