@@ -35,11 +35,13 @@ The application includes:
 
 The API routes handle:
 
-- GET /api/users - List all users
-- GET /api/users/ - Get a single user
-- POST /api/users - Create a new user
-- PUT /api/users/ - Update a user
-- DELETE /api/users/ - Delete a user
+| METHOD | Endpoint       | Description       |
+| ------ | -------------- | ----------------- |
+| GET    | /api/users     | List all users    |
+| GET    | /api/users/:id | Get a single user |
+| POST   | /api/users     | Create a new user |
+| PUT    | /api/users/:id | Update a user     |
+| DELETE | /api/users     | xDelete a userxx  |
 
 ---
 
