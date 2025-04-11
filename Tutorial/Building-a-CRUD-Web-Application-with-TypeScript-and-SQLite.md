@@ -1,55 +1,117 @@
 # Building a CRUD Web Application with TypeScript and SQLite
 
-I'd be happy to guide you through building a CRUD (Create, Read, Update, Delete) web application using TypeScript and SQLite. Let's break this down into clear steps.
+CRUD (Create, Read, Update, Delete) web application using TypeScript and SQLite.
 
-First, I'll create a simple but complete web application that demonstrates all CRUD operations. We'll use:
+We'll use:
 
-* TypeScript for type safety
-* Express.js for the web server
-* SQLite for the database
-* Basic HTML/CSS for the frontend
+- TypeScript for type safety
+- Express.js for the web server
+- SQLite for the database
+- Basic HTML/CSS for the frontend
 
-Let's get started:
+---
+
+## Database Layer
+
+Implement a SQLite database connection with proper TypeScript interfaces. The database will:
+
+- Create a table for users if it doesn't exist
+- Connect safely with proper error handling
+- Support all CRUD operations
+
+---
+
+## Models and Services
+
+The application includes:
+
+- User interface for type safety
+- User service with methods for all CRUD operations
+- Proper error handling and type checking
+
+---
+
+## Express Routes
+
+The API routes handle:
+
+- GET /api/users - List all users
+- GET /api/users/ - Get a single user
+- POST /api/users - Create a new user
+- PUT /api/users/ - Update a user
+- DELETE /api/users/ - Delete a user
+
+---
+
+## Frontend Implementation
+
+The frontend includes:
+
+- Clean HTML/CSS for user management
+- JavaScript to interact with the API
+- Form for adding/editing users
+- Dynamic list of users with edit/delete options
+
+---
+
+## Running the Application
+
+To run the application:
+
+```bash
+# Development mode with auto-reload
+npm run dev
+
+# Or build and run production
+npm run build
+npm start
+```
+
+The application will be available at http://localhost:3000.
+
+---
+
+### STEP-by-Step Guide to Building Your CRUD Application
+
+#### STEP 1: Project Setup and Dependencies
+
+First, create a new project and install dependencies:
 
 ```
-// This is a step-by-step guide to building a CRUD web application
-// with TypeScript and SQLite
+/ts-simple-crud
+├── src/
+│   ├── db/
+│   ├── model/
+│   ├── routes/
+│   ├── public/
+│   └── app.ts
+├── package.json
+└── tsconfig.json
+```
 
-/**
- * STEP 1: Project Setup
- * 
- * First, let's set up our project structure:
- * 
- * /project-root
- *   /src
- *     /db
- *     /models
- *     /routes
- *     /public
- *     app.ts
- *   package.json
- *   tsconfig.json
- */
+1. Initialize Project Directory
 
-/**
- * STEP 2: Initialize the project
- * 
- * Run these commands in your terminal:
- * 
- * mkdir crud-ts-sqlite
- * cd crud-ts-sqlite
- * npm init -y
- * npm install express sqlite3 cors body-parser
- * npm install --save-dev typescript ts-node @types/node @types/express @types/sqlite3 @types/cors nodemon
- */
+   ```bash
+   mkdir ts-simple-crud
+   cd ts-simple-crud
 
-/**
- * STEP 3: Configure TypeScript
- * 
- * Create a tsconfig.json file:
- */
+   npm init -y
 
-// tsconfig.json
+   mkdir src src/db src/model src/routes src/public
+   ```
+
+2. Install Dependecies
+
+   ```bash
+   npm install express sqlite3 cors body-parser
+   npm install --save-dev typescript ts-node @types/node @types/express @types/sqlite3 @types/cors nodemon
+   ```
+
+### STEP 2: Configure TypeScript (`tsconfig.json`)
+
+Create a tsconfig.json file:
+
+```json
 {
   "compilerOptions": {
     "target": "es6",
@@ -64,34 +126,34 @@ Let's get started:
   "include": ["src/**/*"],
   "exclude": ["node_modules"]
 }
+```
 
-/**
- * STEP 4: Update package.json with scripts
- */
+### STEP 3: Update package.json with scripts
 
-// In package.json, add these scripts:
+In package.json, add these scripts:
+
+```json
 "scripts": {
   "start": "node dist/app.js",
   "dev": "nodemon --exec ts-node src/app.ts",
   "build": "tsc"
 }
+```
 
-/**
- * STEP 5: Create Database Module
- */
+### STEP 4: Create Database Module (`src/db/database.ts`)
 
-// src/db/database.ts
-import sqlite3 from 'sqlite3';
-import { open, Database } from 'sqlite';
+```javascript
+import sqlite3 from "sqlite3";
+import { open, Database } from "sqlite";
 
 let db: Database;
 
 export async function connectDb() {
   db = await open({
-    filename: './database.sqlite',
-    driver: sqlite3.Database
+    filename: "./database.sqlite",
+    driver: sqlite3.Database,
   });
-  
+
   await db.exec(`
     CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -100,23 +162,22 @@ export async function connectDb() {
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `);
-  
-  console.log('Database connected and initialized');
+
+  console.log("Database connected and initialized");
   return db;
 }
 
 export function getDb() {
   if (!db) {
-    throw new Error('Database not initialized. Call connectDb first.');
+    throw new Error("Database not initialized. Call connectDb first.");
   }
   return db;
 }
+```
 
-/**
- * STEP 6: Create User Model
- */
+### STEP 5: Create User Model (`src/models/User.ts`)
 
-// src/models/User.ts
+```javascript
 export interface User {
   id?: number;
   name: string;
@@ -128,183 +189,183 @@ export interface UserInput {
   name: string;
   email: string;
 }
+```
 
-/**
- * STEP 7: Create User Service
- */
+### STEP 6: Create User Service (`src/models/UserService.ts`)
 
-// src/models/UserService.ts
-import { getDb } from '../db/database';
-import { User, UserInput } from './User';
+```javascript
+import { getDb } from "../db/database";
+import { User, UserInput } from "./User";
 
 export async function getAllUsers(): Promise<User[]> {
   const db = getDb();
-  return await db.all('SELECT * FROM users ORDER BY created_at DESC');
+  return await db.all("SELECT * FROM users ORDER BY created_at DESC");
 }
 
 export async function getUserById(id: number): Promise<User | undefined> {
   const db = getDb();
-  return await db.get('SELECT * FROM users WHERE id = ?', id);
+  return await db.get("SELECT * FROM users WHERE id = ?", id);
 }
 
 export async function createUser(user: UserInput): Promise<User> {
   const db = getDb();
   const result = await db.run(
-    'INSERT INTO users (name, email) VALUES (?, ?)',
+    "INSERT INTO users (name, email) VALUES (?, ?)",
     user.name,
     user.email
   );
-  
+
   return {
     id: result.lastID,
-    ...user
+    ...user,
   };
 }
 
-export async function updateUser(id: number, user: UserInput): Promise<User | undefined> {
+export async function updateUser(
+  id: number,
+  user: UserInput
+): Promise<User | undefined> {
   const db = getDb();
   await db.run(
-    'UPDATE users SET name = ?, email = ? WHERE id = ?',
+    "UPDATE users SET name = ?, email = ? WHERE id = ?",
     user.name,
     user.email,
     id
   );
-  
+
   return await getUserById(id);
 }
 
 export async function deleteUser(id: number): Promise<boolean> {
   const db = getDb();
-  const result = await db.run('DELETE FROM users WHERE id = ?', id);
+  const result = await db.run("DELETE FROM users WHERE id = ?", id);
   return result.changes > 0;
 }
+```
 
-/**
- * STEP 8: Create API Routes
- */
+### STEP 7: Create API Routes (`src/routes/userRoutes.ts`)
 
-// src/routes/userRoutes.ts
-import express, { Request, Response } from 'express';
-import { UserInput } from '../models/User';
-import { 
-  getAllUsers, 
-  getUserById, 
-  createUser, 
-  updateUser, 
-  deleteUser 
-} from '../models/UserService';
+```javascript
+import express, { Request, Response } from "express";
+import { UserInput } from "../models/User";
+import {
+  getAllUsers,
+  getUserById,
+  createUser,
+  updateUser,
+  deleteUser,
+} from "../models/UserService";
 
 const router = express.Router();
 
 // Get all users
-router.get('/', async (req: Request, res: Response) => {
+router.get("/", async (req: Request, res: Response) => {
   try {
     const users = await getAllUsers();
     res.json(users);
   } catch (error) {
-    console.error('Error getting users:', error);
-    res.status(500).json({ error: 'Failed to retrieve users' });
+    console.error("Error getting users:", error);
+    res.status(500).json({ error: "Failed to retrieve users" });
   }
 });
 
 // Get user by ID
-router.get('/:id', async (req: Request, res: Response) => {
+router.get("/:id", async (req: Request, res: Response) => {
   try {
     const id = parseInt(req.params.id);
     const user = await getUserById(id);
-    
+
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: "User not found" });
     }
-    
+
     res.json(user);
   } catch (error) {
-    console.error('Error getting user:', error);
-    res.status(500).json({ error: 'Failed to retrieve user' });
+    console.error("Error getting user:", error);
+    res.status(500).json({ error: "Failed to retrieve user" });
   }
 });
 
 // Create new user
-router.post('/', async (req: Request, res: Response) => {
+router.post("/", async (req: Request, res: Response) => {
   try {
     const userInput: UserInput = req.body;
-    
+
     if (!userInput.name || !userInput.email) {
-      return res.status(400).json({ error: 'Name and email are required' });
+      return res.status(400).json({ error: "Name and email are required" });
     }
-    
+
     const newUser = await createUser(userInput);
     res.status(201).json(newUser);
   } catch (error) {
-    console.error('Error creating user:', error);
-    
+    console.error("Error creating user:", error);
+
     // Check for unique constraint violation (email already exists)
-    if (error.message?.includes('UNIQUE constraint failed')) {
-      return res.status(409).json({ error: 'Email already exists' });
+    if (error.message?.includes("UNIQUE constraint failed")) {
+      return res.status(409).json({ error: "Email already exists" });
     }
-    
-    res.status(500).json({ error: 'Failed to create user' });
+
+    res.status(500).json({ error: "Failed to create user" });
   }
 });
 
 // Update user
-router.put('/:id', async (req: Request, res: Response) => {
+router.put("/:id", async (req: Request, res: Response) => {
   try {
     const id = parseInt(req.params.id);
     const userInput: UserInput = req.body;
-    
+
     if (!userInput.name || !userInput.email) {
-      return res.status(400).json({ error: 'Name and email are required' });
+      return res.status(400).json({ error: "Name and email are required" });
     }
-    
+
     const user = await updateUser(id, userInput);
-    
+
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: "User not found" });
     }
-    
+
     res.json(user);
   } catch (error) {
-    console.error('Error updating user:', error);
-    
-    if (error.message?.includes('UNIQUE constraint failed')) {
-      return res.status(409).json({ error: 'Email already exists' });
+    console.error("Error updating user:", error);
+
+    if (error.message?.includes("UNIQUE constraint failed")) {
+      return res.status(409).json({ error: "Email already exists" });
     }
-    
-    res.status(500).json({ error: 'Failed to update user' });
+
+    res.status(500).json({ error: "Failed to update user" });
   }
 });
 
 // Delete user
-router.delete('/:id', async (req: Request, res: Response) => {
+router.delete("/:id", async (req: Request, res: Response) => {
   try {
     const id = parseInt(req.params.id);
     const success = await deleteUser(id);
-    
+
     if (!success) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: "User not found" });
     }
-    
+
     res.status(204).end();
   } catch (error) {
-    console.error('Error deleting user:', error);
-    res.status(500).json({ error: 'Failed to delete user' });
+    console.error("Error deleting user:", error);
+    res.status(500).json({ error: "Failed to delete user" });
   }
 });
 
 export default router;
+```
 
-/**
- * STEP 9: Create Main Application
- */
+### STEP 8: Create Main Application (`src/app.ts`)
 
-// src/app.ts
-import express from 'express';
-import cors from 'cors';
-import bodyParser from 'body-parser';
-import path from 'path';
-import { connectDb } from './db/database';
-import userRoutes from './routes/userRoutes';
+```javascript
+import express from "express";
+import cors from "cors";
+import bodyParser from "body-parser";
+import path from "path";
+import { connectDb } from "./db/database";
+import userRoutes from "./routes/userRoutes";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -312,454 +373,403 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, "public")));
 
 // Routes
-app.use('/api/users', userRoutes);
+app.use("/api/users", userRoutes);
 
 // Serve the frontend
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
 // Start the server
 async function startServer() {
   try {
     await connectDb();
-    
+
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });
   } catch (error) {
-    console.error('Failed to start server:', error);
+    console.error("Failed to start server:", error);
     process.exit(1);
   }
 }
 
 startServer();
+```
 
-/**
- * STEP 10: Create Frontend
- */
+### STEP 9: Create Frontend
 
-// src/public/index.html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CRUD App with TypeScript and SQLite</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <div class="container">
-        <h1>User Management</h1>
-        
-        <div class="form-container">
+1. `src/public/index.html`
+
+    ```html
+    <!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>CRUD App with TypeScript and SQLite</title>
+        <link rel="stylesheet" href="styles.css" />
+      </head>
+      <body>
+        <div class="container">
+          <h1>User Management</h1>
+
+          <div class="form-container">
             <h2 id="form-title">Add New User</h2>
             <form id="user-form">
-                <input type="hidden" id="user-id">
-                <div class="form-group">
-                    <label for="name">Name:</label>
-                    <input type="text" id="name" required>
-                </div>
-                <div class="form-group">
-                    <label for="email">Email:</label>
-                    <input type="email" id="email" required>
-                </div>
-                <div class="button-group">
-                    <button type="submit" id="submit-btn">Add User</button>
-                    <button type="button" id="cancel-btn" style="display: none;">Cancel</button>
-                </div>
+              <input type="hidden" id="user-id" />
+              <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" id="name" required />
+              </div>
+              <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" required />
+              </div>
+              <div class="button-group">
+                <button type="submit" id="submit-btn">Add User</button>
+                <button type="button" id="cancel-btn" style="display: none;">
+                  Cancel
+                </button>
+              </div>
             </form>
-        </div>
-        
-        <div class="users-container">
+          </div>
+
+          <div class="users-container">
             <h2>Users</h2>
             <div id="users-list"></div>
+          </div>
         </div>
-    </div>
 
-    <script src="app.js"></script>
-</body>
-</html>
+        <script src="app.js"></script>
+      </body>
+    </html>
+    ```
 
-// src/public/styles.css
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
+2. `src/public/styles.css`
 
-body {
-    font-family: Arial, sans-serif;
-    line-height: 1.6;
-    background-color: #f4f4f4;
-    color: #333;
-}
+    ```css
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-.container {
-    max-width: 800px;
-    margin: 30px auto;
-    padding: 20px;
-}
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      background-color: #f4f4f4;
+      color: #333;
+    }
 
-h1 {
-    text-align: center;
-    margin-bottom: 20px;
-    color: #2c3e50;
-}
+    .container {
+      max-width: 800px;
+      margin: 30px auto;
+      padding: 20px;
+    }
 
-h2 {
-    color: #3498db;
-    margin-bottom: 15px;
-}
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #2c3e50;
+    }
 
-.form-container {
-    background: #fff;
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
-}
+    h2 {
+      color: #3498db;
+      margin-bottom: 15px;
+    }
 
-.form-group {
-    margin-bottom: 15px;
-}
+    .form-container {
+      background: #fff;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+    }
 
-label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-}
+    .form-group {
+      margin-bottom: 15px;
+    }
 
-input[type="text"],
-input[type="email"] {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
 
-.button-group {
-    display: flex;
-    gap: 10px;
-}
+    input[type="text"],
+    input[type="email"] {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
 
-button {
-    padding: 8px 15px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
-}
+    .button-group {
+      display: flex;
+      gap: 10px;
+    }
 
-button[type="submit"] {
-    background-color: #2ecc71;
-    color: white;
-}
+    button {
+      padding: 8px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+    }
 
-#cancel-btn {
-    background-color: #e74c3c;
-    color: white;
-}
+    button[type="submit"] {
+      background-color: #2ecc71;
+      color: white;
+    }
 
-.users-container {
-    background: #fff;
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
+    #cancel-btn {
+      background-color: #e74c3c;
+      color: white;
+    }
 
-.user-card {
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    padding: 15px;
-    margin-bottom: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+    .users-container {
+      background: #fff;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
 
-.user-info h3 {
-    margin-bottom: 5px;
-    color: #2c3e50;
-}
+    .user-card {
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 15px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-.user-actions {
-    display: flex;
-    gap: 10px;
-}
+    .user-info h3 {
+      margin-bottom: 5px;
+      color: #2c3e50;
+    }
 
-.edit-btn {
-    background-color: #3498db;
-    color: white;
-}
+    .user-actions {
+      display: flex;
+      gap: 10px;
+    }
 
-.delete-btn {
-    background-color: #e74c3c;
-    color: white;
-}
+    .edit-btn {
+      background-color: #3498db;
+      color: white;
+    }
 
-// src/public/app.js
-document.addEventListener('DOMContentLoaded', () => {
-    const userForm = document.getElementById('user-form');
-    const formTitle = document.getElementById('form-title');
-    const userIdInput = document.getElementById('user-id');
-    const nameInput = document.getElementById('name');
-    const emailInput = document.getElementById('email');
-    const submitBtn = document.getElementById('submit-btn');
-    const cancelBtn = document.getElementById('cancel-btn');
-    const usersList = document.getElementById('users-list');
+    .delete-btn {
+      background-color: #e74c3c;
+      color: white;
+    }
+    ```
 
-    // Load all users on page load
-    fetchUsers();
+3. `src/public/app.js`
 
-    // Form submission handler
-    userForm.addEventListener('submit', async (e) => {
+    ```javascript
+    document.addEventListener("DOMContentLoaded", () => {
+      const userForm = document.getElementById("user-form");
+      const formTitle = document.getElementById("form-title");
+      const userIdInput = document.getElementById("user-id");
+      const nameInput = document.getElementById("name");
+      const emailInput = document.getElementById("email");
+      const submitBtn = document.getElementById("submit-btn");
+      const cancelBtn = document.getElementById("cancel-btn");
+      const usersList = document.getElementById("users-list");
+
+      // Load all users on page load
+      fetchUsers();
+
+      // Form submission handler
+      userForm.addEventListener("submit", async (e) => {
         e.preventDefault();
-        
+
         const user = {
-            name: nameInput.value,
-            email: emailInput.value
+          name: nameInput.value,
+          email: emailInput.value,
         };
-        
+
         const userId = userIdInput.value;
-        
+
         if (userId) {
-            // Update existing user
-            await updateUser(userId, user);
+          // Update existing user
+          await updateUser(userId, user);
         } else {
-            // Create new user
-            await createUser(user);
+          // Create new user
+          await createUser(user);
         }
-        
+
         // Reset form and reload users
         resetForm();
         fetchUsers();
-    });
-    
-    // Cancel button handler
-    cancelBtn.addEventListener('click', resetForm);
-    
-    // Fetch all users from the API
-    async function fetchUsers() {
+      });
+
+      // Cancel button handler
+      cancelBtn.addEventListener("click", resetForm);
+
+      // Fetch all users from the API
+      async function fetchUsers() {
         try {
-            const response = await fetch('/api/users');
-            const users = await response.json();
-            
-            displayUsers(users);
+          const response = await fetch("/api/users");
+          const users = await response.json();
+
+          displayUsers(users);
         } catch (error) {
-            console.error('Error fetching users:', error);
-            alert('Failed to load users');
+          console.error("Error fetching users:", error);
+          alert("Failed to load users");
         }
-    }
-    
-    // Display users in the list
-    function displayUsers(users) {
-        usersList.innerHTML = '';
-        
+      }
+
+      // Display users in the list
+      function displayUsers(users) {
+        usersList.innerHTML = "";
+
         if (users.length === 0) {
-            usersList.innerHTML = '<p>No users found</p>';
-            return;
+          usersList.innerHTML = "<p>No users found</p>";
+          return;
         }
-        
-        users.forEach(user => {
-            const userCard = document.createElement('div');
-            userCard.className = 'user-card';
-            
-            userCard.innerHTML = `
-                <div class="user-info">
-                    <h3>${user.name}</h3>
-                    <p>${user.email}</p>
-                    <small>Created: ${new Date(user.created_at).toLocaleString()}</small>
-                </div>
-                <div class="user-actions">
-                    <button class="edit-btn" data-id="${user.id}">Edit</button>
-                    <button class="delete-btn" data-id="${user.id}">Delete</button>
-                </div>
-            `;
-            
-            usersList.appendChild(userCard);
+
+        users.forEach((user) => {
+          const userCard = document.createElement("div");
+          userCard.className = "user-card";
+
+          userCard.innerHTML = `
+                    <div class="user-info">
+                        <h3>${user.name}</h3>
+                        <p>${user.email}</p>
+                        <small>Created: ${new Date(
+                          user.created_at
+                        ).toLocaleString()}</small>
+                    </div>
+                    <div class="user-actions">
+                        <button class="edit-btn" data-id="${user.id}">Edit</button>
+                        <button class="delete-btn" data-id="${
+                          user.id
+                        }">Delete</button>
+                    </div>
+                `;
+
+          usersList.appendChild(userCard);
         });
-        
+
         // Add event listeners to edit and delete buttons
-        document.querySelectorAll('.edit-btn').forEach(btn => {
-            btn.addEventListener('click', () => editUser(btn.dataset.id));
+        document.querySelectorAll(".edit-btn").forEach((btn) => {
+          btn.addEventListener("click", () => editUser(btn.dataset.id));
         });
-        
-        document.querySelectorAll('.delete-btn').forEach(btn => {
-            btn.addEventListener('click', () => deleteUser(btn.dataset.id));
+
+        document.querySelectorAll(".delete-btn").forEach((btn) => {
+          btn.addEventListener("click", () => deleteUser(btn.dataset.id));
         });
-    }
-    
-    // Create a new user
-    async function createUser(user) {
+      }
+
+      // Create a new user
+      async function createUser(user) {
         try {
-            const response = await fetch('/api/users', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(user)
-            });
-            
-            if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.error || 'Failed to create user');
-            }
-            
-            alert('User created successfully!');
+          const response = await fetch("/api/users", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(user),
+          });
+
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || "Failed to create user");
+          }
+
+          alert("User created successfully!");
         } catch (error) {
-            console.error('Error creating user:', error);
-            alert(error.message);
+          console.error("Error creating user:", error);
+          alert(error.message);
         }
-    }
-    
-    // Load user data for editing
-    async function editUser(id) {
+      }
+
+      // Load user data for editing
+      async function editUser(id) {
         try {
-            const response = await fetch(`/api/users/${id}`);
-            const user = await response.json();
-            
-            // Populate the form
-            userIdInput.value = user.id;
-            nameInput.value = user.name;
-            emailInput.value = user.email;
-            
-            // Update form UI
-            formTitle.textContent = 'Edit User';
-            submitBtn.textContent = 'Update User';
-            cancelBtn.style.display = 'block';
-            
-            // Scroll to form
-            document.querySelector('.form-container').scrollIntoView({ behavior: 'smooth' });
+          const response = await fetch(`/api/users/${id}`);
+          const user = await response.json();
+
+          // Populate the form
+          userIdInput.value = user.id;
+          nameInput.value = user.name;
+          emailInput.value = user.email;
+
+          // Update form UI
+          formTitle.textContent = "Edit User";
+          submitBtn.textContent = "Update User";
+          cancelBtn.style.display = "block";
+
+          // Scroll to form
+          document
+            .querySelector(".form-container")
+            .scrollIntoView({ behavior: "smooth" });
         } catch (error) {
-            console.error('Error loading user data:', error);
-            alert('Failed to load user data for editing');
+          console.error("Error loading user data:", error);
+          alert("Failed to load user data for editing");
         }
-    }
-    
-    // Update an existing user
-    async function updateUser(id, user) {
+      }
+
+      // Update an existing user
+      async function updateUser(id, user) {
         try {
-            const response = await fetch(`/api/users/${id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(user)
-            });
-            
-            if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.error || 'Failed to update user');
-            }
-            
-            alert('User updated successfully!');
+          const response = await fetch(`/api/users/${id}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(user),
+          });
+
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || "Failed to update user");
+          }
+
+          alert("User updated successfully!");
         } catch (error) {
-            console.error('Error updating user:', error);
-            alert(error.message);
+          console.error("Error updating user:", error);
+          alert(error.message);
         }
-    }
-    
-    // Delete a user
-    async function deleteUser(id) {
-        if (!confirm('Are you sure you want to delete this user?')) {
-            return;
+      }
+
+      // Delete a user
+      async function deleteUser(id) {
+        if (!confirm("Are you sure you want to delete this user?")) {
+          return;
         }
-        
+
         try {
-            const response = await fetch(`/api/users/${id}`, {
-                method: 'DELETE'
-            });
-            
-            if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.error || 'Failed to delete user');
-            }
-            
-            alert('User deleted successfully!');
-            fetchUsers();
+          const response = await fetch(`/api/users/${id}`, {
+            method: "DELETE",
+          });
+
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || "Failed to delete user");
+          }
+
+          alert("User deleted successfully!");
+          fetchUsers();
         } catch (error) {
-            console.error('Error deleting user:', error);
-            alert(error.message);
+          console.error("Error deleting user:", error);
+          alert(error.message);
         }
-    }
-    
-    // Reset the form to its initial state
-    function resetForm() {
+      }
+
+      // Reset the form to its initial state
+      function resetForm() {
         userForm.reset();
-        userIdInput.value = '';
-        formTitle.textContent = 'Add New User';
-        submitBtn.textContent = 'Add User';
-        cancelBtn.style.display = 'none';
-    }
-});
-```
-
-## Step-by-Step Guide to Building Your CRUD Application
-
-I've created a complete CRUD web application with TypeScript and SQLite. Here's a walkthrough of what's included:
-
-### 1. Project Setup and Dependencies
-
-First, create a new project and install dependencies:
-
-```bash
-mkdir crud-ts-sqlite
-cd crud-ts-sqlite
-npm init -y
-npm install express sqlite3 cors body-parser
-npm install --save-dev typescript ts-node @types/node @types/express @types/sqlite3 @types/cors nodemon
-```
-
-### 2. Database Layer
-
-I've implemented a SQLite database connection with proper TypeScript interfaces. The database will:
-
-* Create a table for users if it doesn't exist
-* Connect safely with proper error handling
-* Support all CRUD operations
-
-### 3. Models and Services
-
-The application includes:
-
-* User interface for type safety
-* User service with methods for all CRUD operations
-* Proper error handling and type checking
-
-### 4. Express Routes
-
-The API routes handle:
-
-* GET /api/users - List all users
-* GET /api/users/ - Get a single user
-* POST /api/users - Create a new user
-* PUT /api/users/ - Update a user
-* DELETE /api/users/ - Delete a user
-
-### 5. Frontend Implementation
-
-The frontend includes:
-
-* Clean HTML/CSS for user management
-* JavaScript to interact with the API
-* Form for adding/editing users
-* Dynamic list of users with edit/delete options
-
-### 6. Running the Application
-
-To run the application:
-
-```bash
-# Development mode with auto-reload
-npm run dev
-
-# Or build and run production
-npm run build
-npm start
-```
-
-The application will be available at http://localhost:3000.
+        userIdInput.value = "";
+        formTitle.textContent = "Add New User";
+        submitBtn.textContent = "Add User";
+        cancelBtn.style.display = "none";
+      }
+    });
+    ```
