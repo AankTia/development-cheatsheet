@@ -1,6 +1,6 @@
 # Building a CRUD Web Application with Go and SQLite with authentication
 
-Here's a comprehensive guide to building a web application with Go and SQLite that includes all the requested functionality.
+Here's a comprehensive guide to building a web application with Go and SQLite.
 
 ## Project Structure
 
@@ -26,13 +26,13 @@ go-sqlite-crud/
 
 ## 1. Setup and Dependencies
 
-First, initialize your Go module:
+### 1.1. Initialize your Go module:
 
 ```bash
 go mod init github.com/yourusername/go-sqlite-crud
 ```
 
-Install required dependencies:
+### 1.2. Install required dependencies:
 
 ```bash
 go get github.com/mattn/go-sqlite3
