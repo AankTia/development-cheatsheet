@@ -38,8 +38,8 @@ SQLite database with a "items" table
 1. create a new Next.js project:
 
     ```bash
-    npx create-next-app@latest crud-nextjs-sqlite
-    cd crud-nextjs-sqlite
+    npx create-next-app@latest nextjs-simple-crud
+    cd nextjs-simple-crud
     ```
 
 2. Install the necessary dependencies:
