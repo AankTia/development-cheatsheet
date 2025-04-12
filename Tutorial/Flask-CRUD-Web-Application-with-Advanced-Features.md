@@ -1,6 +1,21 @@
 # Flask CRUD Web Application with Advanced Features
 
-I'll guide you through building a comprehensive Flask web application with all the requested features. This will be a step-by-step approach covering everything from setup to deployment.
+Building a comprehensive Flask web application. This will be a step-by-step approach covering everything from setup to deployment.
+
+This comprehensive Flask application includes:
+- User authentication (login, registration, password reset)
+- Input validation (forms with WTForms)
+- Pagination (Flask-SQLAlchemy paginate)
+- Search functionality
+- Testing (pytest)
+- Role-based authorization (admin vs regular users)
+- File uploads (with image processing)
+- API endpoints (JSON responses)
+- Real-time updates (SocketIO)
+- Local development setup
+- Docker configuration
+- Deployment to Heroku and Render
+- AWS deployment would follow similar patterns with appropriate configuration for RDS, S3, etc.
 
 ## Project Structure
 
@@ -933,18 +948,3 @@ heroku run flask db upgrade
    - Connect your GitHub repository
    - Set environment variables (DATABASE_URL, SECRET_KEY, etc.)
    - Specify the build command and start command
-
-This comprehensive Flask application includes all the requested features:
-- User authentication (login, registration, password reset)
-- Input validation (forms with WTForms)
-- Pagination (Flask-SQLAlchemy paginate)
-- Search functionality
-- Testing (pytest)
-- Role-based authorization (admin vs regular users)
-- File uploads (with image processing)
-- API endpoints (JSON responses)
-- Real-time updates (SocketIO)
-- Local development setup
-- Docker configuration
-- Deployment to Heroku and Render
-- AWS deployment would follow similar patterns with appropriate configuration for RDS, S3, etc.
